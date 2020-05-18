@@ -71,31 +71,37 @@ for i in range(number_of_players,number_of_players+1):
 #if hit, checks if bust
 #if all stand or bust, dealer draws until winner is found
 
-#make list of states for each player?
-#that is, a list holding values 0, 1, 2 for each
-#0 means in play, can hit or stand
-#1 means has manually stood
-#2 means bust
+
+
+
+
+#make list of states for each player
+#state 0 means in play, can hit or stand
+#state 1 means has manually stood
+#state 2 means bust
+states=[]
+for m in range(number_of_players):
+    states.append(int(0))
 
 for i in range(number_of_players):
+    print("_________________________")
+    print("")
     print("Player %i's turn." % int(i+1))
     print("")
-    print("Dealer has %s." % hands[number_of_players])
+    print("The dealer has %s." % hands[number_of_players])
     print("")
     print("Player %i has %s." % (int(i+1), hands[i]))
     print("")
     print("Player %i: Hit or stand?" % int(i+1))
     print("")
-    hit_or_stand = str(input())
-
-
-    while True:        
+    
+    while True:       
+        hit_or_stand = str(input()) 
         try:
             if hit_or_stand == "hit" or hit_or_stand == "Hit":
                 print("")
                 print("Player %i has hit."% int(i+1))
                 print("")
-                hit_or_stand="hit"
                 #add random card from deck to player i's hand
                 x = randint(0,len(deck)-1)
                 hands[i].append(deck[x])
@@ -104,23 +110,73 @@ for i in range(number_of_players):
                 print("Player %i has %s." % (int(i+1), hands[i]))
                 #check if bust
                 if count_func(hands[i]) > 21:
-                    print("Bust!")
-                else:
-                    print("Hit or stand:")
+                    #if count > 21, set state to 2 (bust) and print
+                    states[i]=2
                     print("")
-                    hit_or_stand = str(input())
-                break
+                    print("Player %i has bust!" % int(i+1))
+                    print("_________________________")
+                    break
             elif hit_or_stand == "stand" or hit_or_stand == "Stand":
+                #if player stands, set state to 1 (stand) and print
+                states[i]=1
                 print("")
                 print("Player %i stands with a count of %s." %(int(i+1),count_func(hands[i])))
-                print("")
-                hit_or_stand="stand"
+                print("_________________________")
                 break
             else:
+                #invalid code if neither hit nor stand to force exception below
                 x=2/0
         except:
-            print("Must enter 'hit' or 'stand'.")
+            #exception to guaruntee either hit or stand strings as inputs
+            print("")
+            print("Must enter 'hit' or 'stand'!!")
+            print("")
             print("Hit or stand:")
+            print("")
             hit_or_stand = str(input())
-        
-    
+
+#now all players have completed turns and are either in state 1 or 2 (stand or bust)
+#can now give dealer cards, stopping when count \geq 17
+print("")
+print("The dealer has %s." % hands[number_of_players])
+while count_func(hands[number_of_players]) < 17:
+    x = randint(0,len(deck)-1)
+    hands[number_of_players].append(deck[x])
+    print("")
+    print("Dealer draws %s." % deck[x])
+    print("")
+    deck.remove(deck[x])
+    print("Dealer's hand is now %s." % hands[number_of_players])
+print("_________________________")
+print("")
+print("Dealer's final count is %i!" % count_func(hands[number_of_players]))
+print("_________________________")
+print("")
+dealer_count = count_func(hands[number_of_players])
+
+
+#if statements for the different scenarios
+
+#if dealer goes bust, tell non-bust players they are winners, and bust players they are losers
+if dealer_count > 21:
+    print("Dealer is bust with a count of %i!" % dealer_count)
+    for i in range(len(states)):
+        if states[i] == 1:
+            print("Player %i is a winner!" % int(i+1))
+        if states[i]==2:
+            print("Player %i is a loser!" % int(i+1))
+
+#if dealer count \leq 21, compare count to non-bust players and decide win or push.
+if dealer_count < 22:
+    for i in range(number_of_players):
+        if states[i] == 2:
+            print("Player %i is a loser!" % int(i+1))
+        else:
+            if count_func(hands[i]) == dealer_count:
+                print("Player %i's hand is a push!" % int(i+1))
+            if count_func(hands[i]) < dealer_count:
+                print("Player %i is a loser!" % int(i+1))
+            if count_func(hands[i]) > dealer_count:
+                print("Player %i is a winner!" % int(i+1))
+
+
