@@ -91,11 +91,11 @@ for i in range(number_of_players):
     print("The dealer has %s." % hands[number_of_players])
     print("")
     print("Player %i has %s." % (int(i+1), hands[i]))
-    print("")
-    print("Player %i: Hit or stand?" % int(i+1))
-    print("")
-    
-    while True:       
+
+    while True:   
+        print("")    
+        print("Player %i: Hit or stand?" % int(i+1))
+        print("")
         hit_or_stand = str(input()) 
         try:
             if hit_or_stand == "hit" or hit_or_stand == "Hit":
