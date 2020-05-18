@@ -16,11 +16,13 @@ def count_func(a_hand):
     return count
 
 import numpy
+import time
 from random import randint
 
 #Welcome message, input request for number of players
 print("")
 print("Welcome to Blackjack.")
+time.sleep(1.25)
 print("")
 print("Input the number of players (1-7):")
 print("")
@@ -38,15 +40,17 @@ while True:
         else:
             x=2/0
     except:
+        print("")
         print("Number of players must be an integer between 1 and 7.")
         print("")
+        time.sleep(1)
         print("Input the number of players (1-7):")
+        print("")
         number_of_players = input()
-
+time.sleep(0.5)
 number_of_players = int(number_of_players)
 print("")
 print("Starting a %d player game."% number_of_players)
-print("")
 
 #generate empty lists to hold enough hands for number of players +1 for dealer's hand
 hands=[]
@@ -66,12 +70,6 @@ for i in range(number_of_players,number_of_players+1):
 
 
 
-#the main game loop
-#should run through each player, asking hit or stand
-#if hit, checks if bust
-#if all stand or bust, dealer draws until winner is found
-
-
 
 
 
@@ -83,20 +81,30 @@ states=[]
 for m in range(number_of_players):
     states.append(int(0))
 
+#the main game loop
+#should run through each player, asking hit or stand
+#if hit, checks if bust
+#if all stand or bust, dealer draws until winner is found
+
 for i in range(number_of_players):
+    time.sleep(1)
     print("_________________________")
     print("")
+    time.sleep(1)
     print("Player %i's turn." % int(i+1))
     print("")
+    time.sleep(1)
     print("The dealer has %s." % hands[number_of_players])
     print("")
+    time.sleep(1)
     print("Player %i has %s." % (int(i+1), hands[i]))
-
+    time.sleep(1)
     while True:   
         print("")    
         print("Player %i: Hit or stand?" % int(i+1))
         print("")
         hit_or_stand = str(input()) 
+        time.sleep(0.5)
         try:
             if hit_or_stand == "hit" or hit_or_stand == "Hit":
                 print("")
@@ -107,21 +115,21 @@ for i in range(number_of_players):
                 hands[i].append(deck[x])
                 deck.remove(deck[x]) 
                 #print their new hand
+                time.sleep(1)
                 print("Player %i has %s." % (int(i+1), hands[i]))
+                time.sleep(0.75)
                 #check if bust
                 if count_func(hands[i]) > 21:
                     #if count > 21, set state to 2 (bust) and print
                     states[i]=2
                     print("")
                     print("Player %i has bust!" % int(i+1))
-                    print("_________________________")
                     break
             elif hit_or_stand == "stand" or hit_or_stand == "Stand":
                 #if player stands, set state to 1 (stand) and print
                 states[i]=1
                 print("")
                 print("Player %i stands with a count of %s." %(int(i+1),count_func(hands[i])))
-                print("_________________________")
                 break
             else:
                 #invalid code if neither hit nor stand to force exception below
@@ -129,27 +137,37 @@ for i in range(number_of_players):
         except:
             #exception to guaruntee either hit or stand strings as inputs
             print("")
+            time.sleep(1)
             print("Must enter 'hit' or 'stand'!!")
             print("")
+            time.sleep(1)
             print("Hit or stand:")
             print("")
             hit_or_stand = str(input())
 
 #now all players have completed turns and are either in state 1 or 2 (stand or bust)
 #can now give dealer cards, stopping when count \geq 17
+time.sleep(1)
+print("_________________________")
 print("")
+time.sleep(1)
 print("The dealer has %s." % hands[number_of_players])
 while count_func(hands[number_of_players]) < 17:
     x = randint(0,len(deck)-1)
     hands[number_of_players].append(deck[x])
     print("")
+    time.sleep(1)
     print("Dealer draws %s." % deck[x])
     print("")
     deck.remove(deck[x])
+    time.sleep(1)
     print("Dealer's hand is now %s." % hands[number_of_players])
+    time.sleep(1)
 print("_________________________")
+time.sleep(1)
 print("")
 print("Dealer's final count is %i!" % count_func(hands[number_of_players]))
+time.sleep(1)
 print("_________________________")
 print("")
 dealer_count = count_func(hands[number_of_players])
@@ -160,23 +178,33 @@ dealer_count = count_func(hands[number_of_players])
 #if dealer goes bust, tell non-bust players they are winners, and bust players they are losers
 if dealer_count > 21:
     print("Dealer is bust with a count of %i!" % dealer_count)
+    print("")
+    
     for i in range(len(states)):
+        time.sleep(1)
         if states[i] == 1:
             print("Player %i is a winner!" % int(i+1))
+            print("")
         if states[i]==2:
             print("Player %i is a loser!" % int(i+1))
+            print("")
 
 #if dealer count \leq 21, compare count to non-bust players and decide win or push.
 if dealer_count < 22:
     for i in range(number_of_players):
+        time.sleep(1)
         if states[i] == 2:
             print("Player %i is a loser!" % int(i+1))
+            print("")
         else:
             if count_func(hands[i]) == dealer_count:
                 print("Player %i's hand is a push!" % int(i+1))
+                print("")
             if count_func(hands[i]) < dealer_count:
                 print("Player %i is a loser!" % int(i+1))
+                print("")
             if count_func(hands[i]) > dealer_count:
                 print("Player %i is a winner!" % int(i+1))
+                print("")
 
 
