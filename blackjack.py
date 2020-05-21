@@ -3,6 +3,7 @@
 import numpy
 import time
 from random import randint
+MAX_CARD_COUNT = 21
 
 # First define deck.
 deck = ["2 of hearts","3 of hearts","4 of hearts","5 of hearts","6 of hearts","7 of hearts","8 of hearts","9 of hearts","10 of hearts","Jack of hearts","Queen of hearts","King of hearts","Ace of of hearts","2 of clubs","3 of clubs","4 of clubs","5 of clubs","6 of clubs","7 of clubs","8 of clubs","9 of clubs","10 of clubs","Jack of clubs","Queen of clubs","King of clubs","Ace of clubs","2 of diamonds","3 of diamonds","4 of diamonds","5 of diamonds","6 of diamonds","7 of diamonds","8 of diamonds","9 of diamonds","10 of diamonds","Jack of diamonds","Queen of diamonds","King of diamonds","Ace of diamonds","2 of spades","3 of spades","4 of spades","5 of spades","6 of spades","7 of spades","8 of spades","9 of spades","10 of spades","Jack of spades","Queen of spades","King of spades","Ace of spades"]
@@ -28,27 +29,21 @@ def count_hand(hand):
 
 print("Welcome to Blackjack.\n")
 time.sleep(1.25)
-print("Input the number of players (1-7):\n")
-number_of_players = input()
-print("")
+
 
 # Lists the acceptable inputs for use below, not accepting anything but these.
 acceptable_inputs = [1,2,3,4,5,6,7]
 
 # Only accept valid inputs (integer between 1 and 7).
 while True:
-    try:
-        number_of_players = int(number_of_players)
-        if int(number_of_players) in acceptable_inputs:
-            break
-        else:
-            x=2/0
-    except:
+    print("Input the number of players (1-7):\n")
+    number_of_players = input()
+    print("")
+    if number_of_players in [str(1), str(2), str(3), str(4), str(5), str(6), str(7)]:
+        break
+    else:
         print("Number of players must be an integer between 1 and 7.\n")
-        time.sleep(1)
-        print("Input the number of players (1-7):\n")
-        number_of_players = input()
-        print("")
+
 time.sleep(0.5)
 number_of_players = int(number_of_players)
 print("Starting a %d player game."% number_of_players)
@@ -306,7 +301,6 @@ if dealer_count > 21:
                 print("Player %i loses!\n" % int(i+1))
                 time.sleep(1)
 
-#####done above, complete below
 
 #if dealer count \leq 21, compare count to non-bust players and decide win or push.
 if dealer_count < 22:
@@ -328,8 +322,3 @@ if dealer_count < 22:
                 print("Player %i wins!" % int(i+1))
                 print("")
                 time.sleep(1)
-
-
-
-#add split functionality
-
