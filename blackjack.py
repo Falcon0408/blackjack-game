@@ -21,11 +21,16 @@ def count_hand(hand):
             count=count+11
         else:
             count=count+int(hand[j][:1])
-    if count>MAX_CARD_COUNT:
+    if count > MAX_CARD_COUNT:
         if hand[0][:2] == "Ac" or hand[1][:2] == "Ac":
             count=count-10
     return count
 
+# Define function that deals a card to a hand
+def card_deal(hand):
+    randomcard_id = randint(0,len(deck)-1)
+    hand.append(deck[randomcard_id])
+    deck.remove(deck[randomcard_id]) 
 
 # Welcome message, input request for number of players.
 print("Welcome to Blackjack.\n")
@@ -48,35 +53,32 @@ print("Starting a %d player game."% number_of_players)
 
 # Generate empty lists to hold enough hands for number of players +1 for dealer's hand.
 hands=[]
-for m in range(number_of_players+1):
+for player_id in range(number_of_players+1):
     hands.append([])
 
 # Generate empty list to hold potential split hands.
 hands_split = []
-for m in range(number_of_players+1):
+for player_id in range(number_of_players+1):
     hands_split.append([])
 
 # Give everyone 2 cards, give dealer one card (dealers hand is held in last element of list).
-for i in range(number_of_players):
+for player_id in range(number_of_players):
     for j in range(2):
-        x = randint(0,len(deck)-1)
-        hands[i].append(deck[x])
-        deck.remove(deck[x]) 
-for i in range(number_of_players,number_of_players+1):
-    x = randint(0,len(deck)-1)
-    hands[i].append(deck[x])
-    deck.remove(deck[x]) 
+        card_deal(hands[player_id])
+
+dealer_id = number_of_players
+card_deal(hands[dealer_id])
 
 # Make list of states for each player.
 # State in_play means in play, can hit or stand.
 # State stood means has manually stood.
 # State bust means bust.
 states = []
-for m in range(number_of_players):
+for player_id in range(number_of_players):
     states.append("in_play")
 # Generate states of split hands.
 states_split = []
-for m in range(number_of_players):
+for player_id in range(number_of_players):
     states_split.append("")
 
 # The main game loop.
@@ -85,22 +87,22 @@ for m in range(number_of_players):
 # If hit, checks if bust.
 # If all stand or bust, dealer draws until winner is found.
 
-for i in range(number_of_players):
+for player_id in range(number_of_players):
     time.sleep(1)
     print("_________________________\n")
     time.sleep(1)
-    print("Player %i's turn.\n" % int(i+1))
+    print("Player %i's turn.\n" % int(player_id+1))
     time.sleep(1)
     print("The dealer has %s.\n" % hands[number_of_players])
     time.sleep(1)
-    print("Player %i has %s.\n" % (int(i+1), hands[i]))
+    print("Player %i has %s.\n" % (int(player_id+1), hands[player_id]))
     time.sleep(1)
 
     # Check if hand is splittable, offer split.
     # Put second card into new hand and deal both hands to 2 cards.
-    if hands[i][0][:2] == hands[i][1][:2]:
+    if hands[player_id][0][:2] == hands[player_id][1][:2]:
 
-        print("Player %i can split.\n" % int(i+1))
+        print("Player %i can split.\n" % int(player_id+1))
         time.sleep(1)
       
         while True:
@@ -111,27 +113,23 @@ for i in range(number_of_players):
             # If no, break and continue to main loop.
             # Else invalid to proceed to exception.
             if split_pair in ["Yes", "yes", "y", "Y"]:
-                states_split[i] = "in_play"
+                states_split[player_id] = "in_play"
                 time.sleep(1)
-                print("Player %i splits their pair and is given extra cards.\n" % int(i+1))
+                print("Player %i splits their pair and is given extra cards.\n" % int(player_id+1))
                 # Move the second card in players hand to a different hand.
-                hands_split[i].append(hands[i][1])
-                hands[i].remove(hands[i][1])
+                hands_split[player_id].append(hands[player_id][1])
+                hands[player_id].remove(hands[player_id][1])
                 # Randomly deal 1 card to both hands for the player.
-                x = randint(0,len(deck)-1)
-                hands[i].append(deck[x])
-                deck.remove(deck[x]) 
-                x = randint(0,len(deck)-1)
-                hands_split[i].append(deck[x])
-                deck.remove(deck[x]) 
+                card_deal(hands[player_id])
+                card_deal(hands_split[player_id])
                 time.sleep(1)   
-                print("Player %i's first hand is %s.\n" % (int(i+1),hands[i]))
+                print("Player %i's first hand is %s.\n" % (int(player_id+1),hands[player_id]))
                 time.sleep(1)
-                print("Player %i's second hand is %s.\n" % (int(i+1),hands_split[i]))
+                print("Player %i's second hand is %s.\n" % (int(player_id+1),hands_split[player_id]))
                 time.sleep(1)
                 break
             elif split_pair in ["No", "no", "n", "N"]:
-                print("Player %i does not split their hand.\n" % int(i+1))
+                print("Player %i does not split their hand.\n" % int(player_id+1))
                 break
             else:
                 time.sleep(0.5)
@@ -139,36 +137,34 @@ for i in range(number_of_players):
 
     
     # Check if player has split, if not do first loop.
-    if states_split[i] != "in_play":   
+    if states_split[player_id] != "in_play":   
         while True:
-            print("Player %i: Hit or stand?\n" % int(i+1))
+            print("Player %i: Hit or stand?\n" % int(player_id+1))
             hit_or_stand = str(input()) 
             print("")
             time.sleep(0.5)
 
             if hit_or_stand in ["hit", "Hit"]:
-                print("Player %i has hit.\n"% int(i+1))
+                print("Player %i has hit.\n"% int(player_id+1))
                 # Add random card from deck to player i's hand.
-                x = randint(0,len(deck)-1)
-                hands[i].append(deck[x])
-                deck.remove(deck[x]) 
+                card_deal(hands[player_id])
                 time.sleep(1)
 
                 # Print their new hand.                
-                print("Player %i has %s.\n" % (int(i+1), hands[i]))
+                print("Player %i has %s.\n" % (int(player_id+1), hands[player_id]))
                 time.sleep(0.75)
 
                 # Check if new hand is bust.
-                if count_hand(hands[i]) > MAX_CARD_COUNT:
+                if count_hand(hands[player_id]) > MAX_CARD_COUNT:
                     # If count > 21, set state to bust and print.
-                    states[i] = "bust"
-                    print("Player %i has bust!\n" % int(i+1))
+                    states[player_id] = "bust"
+                    print("Player %i has bust!" % int(player_id+1))
                     break
 
             # If player stands, set state to stood and print.
             elif hit_or_stand in ["stand", "Stand"]:
-                states[i] = "stood"
-                print("Player %i stands with a count of %s.\n" %(int(i+1),count_hand(hands[i])))
+                states[player_id] = "stood"
+                print("Player %i stands with a count of %s." %(int(player_id+1),count_hand(hands[player_id])))
                 break
             # If invalid input (not hit or stand), repeat loop
             else:
@@ -179,71 +175,67 @@ for i in range(number_of_players):
     else: 
         # First hand loop
         while True:
-            print("Player %i, first hand: Hit or stand?\n" % int(i+1))
+            print("Player %i, first hand: Hit or stand?\n" % int(player_id + 1))
             hit_or_stand = str(input()) 
             print("")
             time.sleep(0.5)
 
             if hit_or_stand in ["hit", "Hit"]:
-                print("Player %i has hit their first hand.\n"% int(i+1))
+                print("Player %i has hit their first hand.\n"% int(player_id + 1))
                 # Add random card from deck to player i's hand.
-                x = randint(0,len(deck)-1)
-                hands[i].append(deck[x])
-                deck.remove(deck[x]) 
+                card_deal(hands[player_id])
                 # Print their new hand.
                 time.sleep(1)
-                print("Player %i's first hand is %s.\n" % (int(i+1), hands[i]))
+                print("Player %i's first hand is %s." % (int(player_id + 1), hands[player_id]))
                 time.sleep(0.75)
 
                 # Check if bust.
-                if count_hand(hands[i]) > MAX_CARD_COUNT:
-                    states[i] = "bust"
-                    print("Player %i's first hand has bust!\n" % int(i+1))
+                if count_hand(hands[player_id]) > MAX_CARD_COUNT:
+                    states[player_id] = "bust"
+                    print("Player %i's first hand has bust!\n" % int(player_id+1))
                     break
 
             elif hit_or_stand in ["stand", "Stand"]:
                 # If player stands, set state to stood and print.
-                states[i] = "stood"
-                print("Player %i stands their first hand with a count of %s.\n" %(int(i+1),count_hand(hands[i])))
+                states[player_id] = "stood"
+                print("Player %i stands their first hand with a count of %s.\n" %(int(player_id+1),count_hand(hands[player_id])))
                 break
             else:
                 print("Must enter 'hit' or 'stand'!!\n")
                 time.sleep(1)
 
         # Second hand loop
-        print("Player %i's second hand is %s.\n" % (int(i+1),hands_split[i]))
+        print("Player %i's second hand is %s.\n" % (int(player_id+1),hands_split[player_id]))
         time.sleep(1)
 
         while True:
-            print("Player %i, second hand: Hit or stand?\n" % int(i+1))
+            print("Player %i, second hand: Hit or stand?\n" % int(player_id + 1))
             hit_or_stand = str(input()) 
             print("")
             time.sleep(0.5)
             if hit_or_stand in ["hit", "Hit"]:
-                print("Player %i has hit their second hand.\n"% int(i+1))
+                print("Player %i has hit their second hand.\n"% int(player_id + 1))
 
                 # Add random card from deck to player i's hand.
-                x = randint(0,len(deck)-1)
-                hands_split[i].append(deck[x])
-                deck.remove(deck[x]) 
+                card_deal(hands_split[player_id])
 
                 # Print their new hand.
                 time.sleep(1)
-                print("Player %i's second hand is %s.\n" % (int(i+1), hands_split[i]))
+                print("Player %i's second hand is %s.\n" % (int(player_id + 1), hands_split[player_id]))
                 time.sleep(0.75)
 
                 # Check if bust.
-                if count_hand(hands_split[i]) > MAX_CARD_COUNT:
+                if count_hand(hands_split[player_id]) > MAX_CARD_COUNT:
                     # If count > 21, set state to bust and print.
-                    states_split[i] = "bust"
-                    print("Player %i's second hand has bust!\n" % int(i+1))
+                    states_split[player_id] = "bust"
+                    print("Player %i's second hand has bust!" % int(player_id + 1))
                     break
 
             elif hit_or_stand in ["stand", "Stand"]:
 
                 # If player stands, set state to stood and print.
-                states_split[i] = "stood"
-                print("Player %i stands their second hand with a count of %s.\n" %(int(i+1),count_hand(hands_split[i])))
+                states_split[player_id] = "stood"
+                print("Player %i stands their second hand with a count of %s." %(int(player_id + 1),count_hand(hands_split[player_id])))
                 break
 
             else:
@@ -258,22 +250,17 @@ print("_________________________\n")
 time.sleep(1)
 print("The dealer has %s.\n" % hands[number_of_players])
 # Randomly give the dealer cards until their count is => 17
-while count_hand(hands[number_of_players]) < 17:
-    x = randint(0,len(deck)-1)
-    hands[number_of_players].append(deck[x])
+while count_hand(hands[dealer_id]) < 17:
+    card_deal(hands[dealer_id])
     time.sleep(1)
-    print("Dealer draws %s.\n" % deck[x])
-    deck.remove(deck[x])
+    print("Dealer draws %s.\n" % hands[dealer_id][len(hands[dealer_id])-1])
     time.sleep(1)
-    print("Dealer's hand is now %s.\n" % hands[number_of_players])
+    print("Dealer's hand is now %s.\n" % hands[dealer_id])
     time.sleep(1)
-
-print("_________________________\n")
-time.sleep(1)
-print("Dealer's final count is %i!" % count_hand(hands[number_of_players]))
+print("Dealer's final count is %i!" % count_hand(hands[dealer_id]))
 time.sleep(1)
 print("_________________________\n")
-dealer_count = count_hand(hands[number_of_players])
+dealer_count = count_hand(hands[dealer_id])
 
 
 # If statements for the different scenarios.
@@ -283,79 +270,81 @@ if dealer_count > MAX_CARD_COUNT:
     print("Dealer is bust with a count of %i!" % dealer_count)
     print("_________________________\n")
     time.sleep(1)
-    for i in range(len(states)):
+    for player_id in range(len(states)):
         # First check if player has split.
-        if states_split[i] in ["stood", "bust"]:
+        if states_split[player_id] in ["stood", "bust"]:
             # Now run through possibilities.
-            if states[i] == "stood":
-                print("Player %i's first hand wins!\n" % int(i+1))
+            if states[player_id] == "stood":
+                print("Player %i's first hand wins!\n" % int(player_id + 1))
                 time.sleep(1)
 
-            if states[i] == "bust":
-                print("Player %i's first hand loses!\n" % int(i+1))
+            if states[player_id] == "bust":
+                print("Player %i's first hand loses!\n" % int(player_id + 1))
                 time.sleep(1)
 
-            if states_split[i] == "stood":
-                print("Player %i's second hand wins!\n" % int(i+1))
+            if states_split[player_id] == "stood":
+                print("Player %i's second hand wins!\n" % int(player_id + 1))
                 time.sleep(1)
 
-            if states_split[i] == "bust":
-                print("Player %i's second hand loses!\n" % int(i+1))
+            if states_split[player_id] == "bust":
+                print("Player %i's second hand loses!\n" % int(player_id + 1))
                 time.sleep(1)
         else:
-            if states[i] == "stood":
-                print("Player %i wins!\n" % int(i+1))
+            if states[player_id] == "stood":
+                print("Player %i wins!\n" % int(player_id + 1))
                 time.sleep(1)
 
-            if states[i] == "bust":
-                print("Player %i loses!\n" % int(i+1))
+            if states[player_id] == "bust":
+                print("Player %i loses!\n" % int(player_id + 1))
                 time.sleep(1)
 
 else:
 # If dealer count \leq 21, compare count to non-bust players and decide win or push.
-    for i in range(number_of_players):
+    for player_id in range(number_of_players):
         # First check if player has split
-        if states_split[i] in ["stood", "bust"]:
+        if states_split[player_id] in ["stood", "bust"]:
             # Now run through possibilities, with Push meaning a draw
-            if states[i] == "bust":
-                print("Player %i's first hand loses!\n" % int(i+1))
+            if states[player_id] == "bust":
+                print("Player %i's first hand loses!\n" % int(player_id + 1))
                 time.sleep(1)
             else:
-                if count_hand(hands[i]) == dealer_count:
-                    print("Player %i's first hand is a push!\n" % int(i+1))
+                if count_hand(hands[player_id]) == dealer_count:
+                    print("Player %i's first hand is a push!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands[i]) < dealer_count:
-                    print("Player %i's first hand loses!\n" % int(i+1))
+                if count_hand(hands[player_id]) < dealer_count:
+                    print("Player %i's first hand loses!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands[i]) > dealer_count:
-                    print("Player %i's first hand wins!\n" % int(i+1))
+                if count_hand(hands[player_id]) > dealer_count:
+                    print("Player %i's first hand wins!\n" % int(player_id + 1))
                     time.sleep(1)
 
-            if states_split[i] == "bust":
-                print("Player %i's second hand loses!\n" % int(i+1))
+            if states_split[player_id] == "bust":
+                print("Player %i's second hand loses!\n" % int(player_id + 1))
                 time.sleep(1)
             else:
-                if count_hand(hands_split[i]) == dealer_count:
-                    print("Player %i's second hand is a push!\n" % int(i+1))
+                if count_hand(hands_split[player_id]) == dealer_count:
+                    print("Player %i's second hand is a push!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands_split[i]) < dealer_count:
-                    print("Player %i's second hand loses!\n" % int(i+1))
+                if count_hand(hands_split[player_id]) < dealer_count:
+                    print("Player %i's second hand loses!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands_split[i]) > dealer_count:
-                    print("Player %i's second hand wins!\n" % int(i+1))
+                if count_hand(hands_split[player_id]) > dealer_count:
+                    print("Player %i's second hand wins!\n" % int(player_id + 1))
                     time.sleep(1) 
         
         else:
-            if states[i] == "bust":
-                print("Player %i loses!\n" % int(i+1))
+            if states[player_id] == "bust":
+                print("Player %i loses!\n" % int(player_id + 1))
                 time.sleep(1)
             else:
-                if count_hand(hands[i]) == dealer_count:
-                    print("Player %i's hand is a push!\n" % int(i+1))
+                if count_hand(hands[player_id]) == dealer_count:
+                    print("Player %i's hand is a push!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands[i]) < dealer_count:
-                    print("Player %i loses!\n" % int(i+1))
+                if count_hand(hands[player_id]) < dealer_count:
+                    print("Player %i loses!\n" % int(player_id + 1))
                     time.sleep(1)
-                if count_hand(hands[i]) > dealer_count:
-                    print("Player %i wins!\n" % int(i+1))
+                if count_hand(hands[player_id]) > dealer_count:
+                    print("Player %i wins!\n" % int(player_id + 1))
                     time.sleep(1)
+
+print("Thanks for playing!")
